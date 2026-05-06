@@ -11,7 +11,8 @@ const app = express();
 // CORS middleware
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: ["http://localhost:5173", "https://atp-24-eg-107-d46-week-6-flrm.vercel.app", "https://atp-24-eg-107-d46-week-6-flrm.vercel.app"],
+    
   })
 );
 
@@ -76,8 +77,11 @@ const connectDB = async () => {
       console.log(`Server running on port ${PORT}`)
     );
   } catch (err) {
-    console.error("DB connection failed:", err.message);
-    process.exit(1); // exit process on failure
+    // console.error("DB connection failed:", err.message);
+    // process.exit(1); // exit process on failure
+   
+    console.error("FULL ERROR:", err);
+    process.exit(1);
   }
 };
 
