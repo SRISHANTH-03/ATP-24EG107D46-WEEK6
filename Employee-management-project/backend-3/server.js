@@ -9,14 +9,7 @@ dotenv.config();
 const app = express();
 
 // CORS middleware
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "https://atp-24-eg-107-d46-week-6-flrm.vercel.app",
-    ],
-  })
-);
+app.use(cors());
 
 // body parser middleware
 app.use(express.json());
