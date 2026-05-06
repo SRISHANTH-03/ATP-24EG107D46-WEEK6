@@ -1,4 +1,4 @@
-import exp from "express";
+ import express from "express";
 import mongoose from "mongoose";
 import { empRoute } from "./APIs/EmpApi.js";
 import cors from "cors";
@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const app = exp();
+const app = express();
 
 // CORS middleware
 app.use(
@@ -16,9 +16,9 @@ app.use(
 );
 
 // body parser middleware
-app.use(exp.json());
+app.use(express.json());
 
-// test route (optional but useful)
+// test route
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
@@ -26,35 +26,35 @@ app.get("/", (req, res) => {
 // emp api middleware
 app.use("/emp-api", empRoute);
 
-// invalid path
+// invalid path handler
 app.use((req, res, next) => {
   return res.status(404).json({
-    message: `path ${req.url} is invalid`
+    message: `path ${req.url} is invalid`,
   });
 });
 
-// error handler ✅ moved BEFORE DB start
+// error handler
 app.use((err, req, res, next) => {
   console.log(err.name);
 
   if (err.name === "ValidationError") {
     return res.status(400).json({
       message: "Validation error",
-      error: err.message
+      error: err.message,
     });
   }
 
   if (err.name === "CastError") {
     return res.status(400).json({
       message: "Invalid ObjectId",
-      error: err.message
+      error: err.message,
     });
   }
 
   if (err.name === "MongoServerError" && err.code === 11000) {
     return res.status(409).json({
       message: "No duplicate entries allowed",
-      error: err.keyValue
+      error: err.keyValue,
     });
   }
 
@@ -64,6 +64,10 @@ app.use((err, req, res, next) => {
 // connect to db
 const connectDB = async () => {
   try {
+    if (!process.env.DB_URL) {
+      throw new Error("DB_URL is not defined in .env file");
+    }
+
     await mongoose.connect(process.env.DB_URL);
     console.log("Connected to MongoDB");
 
@@ -73,6 +77,7 @@ const connectDB = async () => {
     );
   } catch (err) {
     console.error("DB connection failed:", err.message);
+    process.exit(1); // exit process on failure
   }
 };
 
